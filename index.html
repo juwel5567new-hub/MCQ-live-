@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCQ Live - অনলাইন মডেল টেস্ট</title>
+    <title>MCQ Live - মূল্যায়ন মডেল টেস্ট প্ল্যাটফর্ম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
@@ -12,113 +12,308 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-[#0B132B] text-slate-100 font-sans pb-20">
+<body class="bg-[#0B132B] text-slate-100 font-sans pb-20 relative min-h-screen">
 
-    <!-- হেডার -->
-    <header class="bg-[#0D1B2A]/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+    <!-- ১. হেডার নেভিগেশন বার -->
+    <header class="bg-[#0D1B2A]/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- লোগো -->
             <h1 onclick="showView('home')" class="text-xl font-black text-emerald-400 cursor-pointer flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap"></i> MCQ Live
+                <i class="fa-solid fa-graduation-cap"></i> মূল্যায়ন
             </h1>
-            <div id="user-sec" class="flex gap-2 text-xs font-semibold items-center">
-                <button id="login-btn" onclick="googleLogin()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-3.5 py-1.5 rounded-full font-bold transition">লগইন</button>
+
+            <div class="flex items-center gap-2">
+                <!-- ড্যাশবোর্ড / লগইন বাটন -->
+                <button id="login-btn" onclick="googleLogin()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs px-3.5 py-1.5 rounded-lg font-bold transition">
+                    ড্যাশবোর্ড
+                </button>
                 <span id="user-name" class="hidden text-xs text-emerald-400 font-bold border border-emerald-500/30 px-3 py-1 rounded-full bg-emerald-500/10"></span>
+
+                <!-- মেনু টগল বাটন (হ্যামবার্গার) -->
+                <button onclick="toggleMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-lg text-base border border-slate-700 flex items-center justify-center w-9 h-9">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
 
+    <!-- ২. ফুল-স্ক্রিন মেনু ড্রেয়ার (স্ক্রিনশটের মত ডিজাইন) -->
+    <div id="side-menu" class="fixed inset-0 bg-[#0B132B]/98 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col justify-between overflow-y-auto">
+        
+        <!-- মেনু হেডার ও ক্লোজ বাটন -->
+        <div>
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-6">
+                <h2 class="text-xl font-black text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i> মূল্যায়ন
+                </h2>
+                <button onclick="toggleMenu()" class="text-slate-400 hover:text-white text-xl p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- মেনু লিংকস -->
+            <nav class="space-y-4 text-sm font-semibold text-slate-200">
+                <a onclick="navigateTo('home')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-house w-5 text-emerald-400"></i> হোম
+                </a>
+                <a onclick="navigateTo('posts')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-briefcase w-5 text-cyan-400"></i> পদসমূহ
+                </a>
+                <a onclick="navigateTo('subjects')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-book-open w-5 text-indigo-400"></i> বিষয়
+                </a>
+                <a onclick="navigateTo('live-exams')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-fire w-5 text-rose-400"></i> লাইভ পরীক্ষা
+                </a>
+                <a onclick="navigateTo('model-tests')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-[#00E676] fa-list-check w-5 text-amber-400"></i> মডেল টেস্ট
+                </a>
+                <a onclick="navigateTo('packages')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-box-archive w-5 text-purple-400"></i> প্যাকেজ
+                </a>
+                <a onclick="navigateTo('leaderboard')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-trophy w-5 text-yellow-400"></i> লিডারবোর্ড
+                </a>
+                <a onclick="navigateTo('faq')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-circle-question w-5 text-teal-400"></i> সচরাচর প্রশ্ন
+                </a>
+                <a onclick="navigateTo('contact')" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/60 cursor-pointer transition">
+                    <i class="fa-solid fa-headset w-5 text-emerald-400"></i> যোগাযোগ
+                </a>
+            </nav>
+        </div>
+
+        <!-- মেনু ফুটার টগল বাটনসমূহ -->
+        <div class="pt-6 border-t border-slate-800 flex items-center justify-between">
+            <button class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 border border-slate-700">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
+            <!-- ভাষা সুইচার -->
+            <div class="bg-slate-900 border border-slate-700 p-1 rounded-xl flex text-xs font-bold">
+                <button class="px-3 py-1.5 rounded-lg text-slate-400">EN</button>
+                <button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-black">বাং</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ৩. মেইন কনটেন্ট সেকশনসমূহ -->
     <main class="max-w-md mx-auto p-4 space-y-6">
 
-        <!-- ১. হোম ভিউ -->
+        <!-- (১) হোম ভিউ -->
         <div id="view-home" class="space-y-6">
             
             <!-- হিরো সেকশন -->
             <div class="text-center space-y-3 pt-2">
                 <h2 class="text-2xl font-black leading-tight text-slate-100">
-                    চাকরি পরীক্ষার পূর্ণাঙ্গ প্রস্তুতি ও <span class="text-emerald-400">মডেল টেস্ট</span> প্ল্যাটফর্ম।
+                    চাকরি পরীক্ষার পূর্ণাঙ্গ প্রস্তুতি ও <span class="text-emerald-400">২০০k+ প্রশ্নের</span> মডেল টেস্ট প্ল্যাটফর্ম।
                 </h2>
-                <p class="text-xs text-slate-400">সহজে মডেল টেস্ট দিন এবং লাইভ মেধা তালিকায় নিজের অবস্থান যাচাই করুন।</p>
             </div>
 
             <!-- স্ট্যাটস কার্ড -->
             <div class="bg-[#1C2541] border border-slate-700/60 rounded-2xl p-4 shadow-xl">
                 <div class="grid grid-cols-2 gap-4 text-center">
                     <div class="border-r border-b border-slate-700/60 pb-3">
-                        <span class="block text-xl font-black text-emerald-400">৩,৩০৭+</span>
-                        <span class="text-[11px] text-slate-400">MCQ প্রশ্ন ব্যাঙ্ক</span>
+                        <span class="block text-xl font-black text-emerald-400">৩,৩০৭</span>
+                        <span class="text-[11px] text-slate-400">MCQ প্রশ্ন ব্যাংক</span>
                     </div>
                     <div class="border-b border-slate-700/60 pb-3">
-                        <span class="block text-xl font-black text-emerald-400">২৫+</span>
+                        <span class="block text-xl font-black text-emerald-400">২৫</span>
                         <span class="text-[11px] text-slate-400">বিষয়</span>
                     </div>
                     <div class="border-r border-slate-700/60 pt-1">
-                        <span class="block text-xl font-black text-emerald-400">১২৮+</span>
-                        <span class="text-[11px] text-slate-400">বিষয়ভিত্তিক সেট</span>
+                        <span class="block text-xl font-black text-emerald-400">১২৮</span>
+                        <span class="text-[11px] text-slate-400">বিষয়ভিত্তিক</span>
                     </div>
                     <div class="pt-1">
-                        <span class="block text-xl font-black text-emerald-400">১৫+</span>
-                        <span class="text-[11px] text-slate-400">জব সল্যুশন</span>
+                        <span class="block text-xl font-black text-emerald-400">১৫</span>
+                        <span class="text-[11px] text-slate-400">জব সলিউশন</span>
                     </div>
                 </div>
             </div>
 
-            <!-- ক্যাটাগরি গ্রিড -->
+            <!-- কুইক গ্রিড বাটন -->
             <div class="grid grid-cols-2 gap-3">
-                <div onclick="startExam()" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3 transition">
+                <div onclick="startExam()" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3">
                     <div class="w-9 h-9 bg-cyan-500/10 text-cyan-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-bolt"></i></div>
-                    <div><h4 class="text-xs font-bold">ডেইলি কুইজ</h4><p class="text-[9px] text-slate-400">প্রতিদিনের পরীক্ষা</p></div>
+                    <div><h4 class="text-xs font-bold">ডেইলি কুইজ</h4></div>
                 </div>
 
-                <div onclick="startExam()" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3 transition">
-                    <div class="w-9 h-9 bg-emerald-500/10 text-emerald-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-[#00E676] fa-fire"></i></div>
-                    <div><h4 class="text-xs font-bold">লাইভ পরীক্ষা</h4><p class="text-[9px] text-slate-400">রিয়েল-টাইম টেস্ট</p></div>
+                <div onclick="navigateTo('live-exams')" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3">
+                    <div class="w-9 h-9 bg-emerald-500/10 text-emerald-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div><h4 class="text-xs font-bold">সাপ্তাহিক পরীক্ষা</h4></div>
                 </div>
 
-                <div onclick="startExam()" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3 transition">
-                    <div class="w-9 h-9 bg-rose-500/10 text-rose-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-book"></i></div>
-                    <div><h4 class="text-xs font-bold">বিষয়ভিত্তিক</h4><p class="text-[9px] text-slate-400">ক্যাটাগরি প্র্যাকটিস</p></div>
+                <div onclick="startExam()" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3">
+                    <div class="w-9 h-9 bg-rose-500/10 text-rose-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-[#00E676] fa-circle-play"></i></div>
+                    <div><h4 class="text-xs font-bold">লাইভ পরীক্ষা</h4></div>
                 </div>
 
-                <div onclick="showView('leaderboard')" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3 transition">
-                    <div class="w-9 h-9 bg-amber-500/10 text-amber-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-trophy"></i></div>
-                    <div><h4 class="text-xs font-bold">মেধা তালিকা</h4><p class="text-[9px] text-slate-400">লাইভ র‍্যাংকিং</p></div>
+                <div onclick="navigateTo('posts')" class="bg-[#1C2541] hover:border-emerald-500/50 cursor-pointer p-3.5 rounded-xl border border-slate-700/60 flex items-center gap-3">
+                    <div class="w-9 h-9 bg-purple-500/10 text-purple-400 rounded-lg flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-briefcase"></i></div>
+                    <div><h4 class="text-xs font-bold">বিসিএস ও অন্যান্য</h4></div>
                 </div>
             </div>
 
-            <!-- পরীক্ষা শুরুর অ্যাকশন কার্ড -->
+            <!-- অ্যাকশন কার্ড -->
             <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-lg space-y-3">
-                <span class="bg-black/30 backdrop-blur text-emerald-200 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase border border-white/10">সক্রিয় মডেল টেস্ট</span>
-                <h3 class="text-lg font-extrabold">৪৬তম বিসিএস ও স্পেশাল লাইভ মডেল টেস্ট</h3>
-                <p class="text-xs text-emerald-100">লাইভ ডাটাবেজ থেকে প্রশ্ন লোড হবে। নেগেটিভ মার্ক: ০.২৫</p>
-                <button onclick="startExam()" class="w-full bg-slate-950 hover:bg-slate-900 text-emerald-400 font-bold text-xs py-3 rounded-xl shadow-md transition border border-emerald-500/30">
+                <h3 class="text-lg font-extrabold">৪৬তম বিসিএস স্পেশাল পরীক্ষা</h3>
+                <p class="text-xs text-emerald-100">লাইভ ডাটাবেজের ওপর অনলাইন পরীক্ষা দিন।</p>
+                <button onclick="startExam()" class="w-full bg-slate-950 hover:bg-slate-900 text-emerald-400 font-bold text-xs py-3 rounded-xl shadow-md border border-emerald-500/30">
                     পরীক্ষায় অংশ নিন 🚀
                 </button>
             </div>
 
-            <!-- ফিচারস কার্ডস -->
-            <div class="space-y-3 pt-2">
-                <h3 class="font-extrabold text-sm text-slate-200 text-center">পরীক্ষার পূর্ণাঙ্গ প্রস্তুতি, এক জায়গায়</h3>
-                
-                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700/60 flex items-start gap-3.5">
-                    <div class="bg-cyan-500/10 text-cyan-400 p-2.5 rounded-xl text-base"><i class="fa-solid fa-box-archive"></i></div>
-                    <div class="space-y-1">
-                        <h4 class="text-xs font-bold">সাবজেক্টভিত্তিক প্রশ্ন ব্যাংক</h4>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">পদ অনুযায়ী বিগত বছরের বিষয়ভিত্তিক প্রশ্ন সমাধান করার সুবিধা।</p>
-                    </div>
-                </div>
-
-                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700/60 flex items-start gap-3.5">
-                    <div class="bg-emerald-500/10 text-emerald-400 p-2.5 rounded-xl text-base"><i class="fa-solid fa-pen-to-square"></i></div>
-                    <div class="space-y-1">
-                        <h4 class="text-xs font-bold">লাইভ ও আর্কাইভ পরীক্ষা</h4>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">নির্ধারিত সময়ে পরীক্ষা দিয়ে ফলাফল ও ব্যাখ্যা সঙ্গে সঙ্গে দেখার সুযোগ।</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- ২. পরীক্ষা স্ক্রিন -->
+        <!-- (২) পদসমূহ ভিউ -->
+        <div id="view-posts" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-briefcase"></i> পদভিত্তিক প্রস্তুতি
+            </h2>
+            <div class="grid grid-cols-1 gap-3">
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center cursor-pointer hover:border-emerald-500">
+                    <div><h4 class="font-bold text-sm">বিসিএস ক্যাডার</h4><p class="text-xs text-slate-400">প্রিলিমিনারি মডেল টেস্ট</p></div>
+                    <i class="fa-solid fa-chevron-right text-slate-500"></i>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center cursor-pointer hover:border-emerald-500">
+                    <div><h4 class="font-bold text-sm">প্রাথমিক শিক্ষক নিয়োগ</h4><p class="text-xs text-slate-400">প্রাইমারি স্পেশাল সেট</p></div>
+                    <i class="fa-solid fa-chevron-right text-slate-500"></i>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center cursor-pointer hover:border-emerald-500">
+                    <div><h4 class="font-bold text-sm">ব্যাংক নিয়োগ পরীক্ষা</h4><p class="text-xs text-slate-400">সরকারি ও বেসরকারি ব্যাংক</p></div>
+                    <i class="fa-solid fa-chevron-right text-slate-500"></i>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center cursor-pointer hover:border-emerald-500">
+                    <div><h4 class="font-bold text-sm">১০ম - ২০তম গ্রেড</h4><p class="text-xs text-slate-400">নন-ক্যাডার জব প্রিপারেশন</p></div>
+                    <i class="fa-solid fa-chevron-right text-slate-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- (৩) বিষয় ভিউ -->
+        <div id="view-subjects" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> বিষয়ভিত্তিক প্রস্তুতি
+            </h2>
+            <div class="grid grid-cols-2 gap-3">
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 text-center space-y-2 cursor-pointer hover:border-emerald-500">
+                    <i class="fa-solid fa-language text-2xl text-cyan-400"></i>
+                    <h4 class="font-bold text-xs">বাংলা ভাষা ও সাহিত্য</h4>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 text-center space-y-2 cursor-pointer hover:border-emerald-500">
+                    <i class="fa-solid fa-font text-2xl text-emerald-400"></i>
+                    <h4 class="font-bold text-xs">English Language</h4>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 text-center space-y-2 cursor-pointer hover:border-emerald-500">
+                    <i class="fa-solid fa-calculator text-2xl text-amber-400"></i>
+                    <h4 class="font-bold text-xs">গণিত ও মানসিক দক্ষতা</h4>
+                </div>
+                <div onclick="startExam()" class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 text-center space-y-2 cursor-pointer hover:border-emerald-500">
+                    <i class="fa-solid fa-globe text-2xl text-rose-400"></i>
+                    <h4 class="font-bold text-xs">সাধারণ জ্ঞান</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- (৪) লাইভ পরীক্ষা ভিউ -->
+        <div id="view-live-exams" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-fire text-rose-500"></i> চলতি লাইভ পরীক্ষাসমূহ
+            </h2>
+            <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 space-y-3">
+                <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-bold px-2 py-0.5 rounded">🔴 LIVE NOW</span>
+                <h4 class="font-bold text-sm">দৈনিক সাধারণ জ্ঞান কুইজ - ১০০ মার্কস</h4>
+                <p class="text-xs text-slate-400">সময়: ৩০ মিনিট | প্রশ্নের সংখ্যা: ৫০টি</p>
+                <button onclick="startExam()" class="w-full bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs">পরীক্ষায় অংশ নিন</button>
+            </div>
+        </div>
+
+        <!-- (৫) মডেল টেস্ট ভিউ -->
+        <div id="view-model-tests" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-list-check"></i> সকল মডেল টেস্ট
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div><h4 class="font-bold text-xs">মডেল টেস্ট #০১</h4><p class="text-[10px] text-slate-400">৫০টি প্রশ্ন | ২৫ মিনিট</p></div>
+                    <button onclick="startExam()" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs px-3 py-1 rounded-lg font-bold">শুরু করুন</button>
+                </div>
+                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div><h4 class="font-bold text-xs">মডেল টেস্ট #০২</h4><p class="text-[10px] text-slate-400">৫০টি প্রশ্ন | ২৫ মিনিট</p></div>
+                    <button onclick="startExam()" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs px-3 py-1 rounded-lg font-bold">শুরু করুন</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- (৬) প্যাকেজ ভিউ -->
+        <div id="view-packages" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-box-archive"></i> সাবস্ক্রিপশন প্যাকেজ
+            </h2>
+            <div class="bg-[#1C2541] p-5 rounded-2xl border border-emerald-500/40 text-center space-y-3">
+                <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">PREMIUM</span>
+                <h3 class="text-xl font-black">অল-ইন-ওয়ান অ্যাক্সেস</h3>
+                <p class="text-2xl font-black text-emerald-400">৳ ১৯৯ <span class="text-xs text-slate-400 font-normal">/ ৩ মাস</span></p>
+                <ul class="text-xs text-slate-300 space-y-2 text-left pt-2 border-t border-slate-700">
+                    <li>✓ আনলিমিটেড লাইভ মডেল টেস্ট</li>
+                    <li>✓ সকল বিষয়ভিত্তিক প্রশ্ন ব্যাংক</li>
+                    <li>✓ বিস্তারিত ব্যাখ্যাসহ উত্তরপত্র</li>
+                </ul>
+                <button onclick="alert('পেমেন্ট গেটওয়ে শীঘ্রই যুক্ত হচ্ছে!')" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">প্যাকেজ কিনুন</button>
+            </div>
+        </div>
+
+        <!-- (৭) লিডারবোর্ড ভিউ -->
+        <div id="view-leaderboard" class="hidden space-y-3">
+            <h2 class="font-bold text-base text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-trophy text-amber-400"></i> আজ মেধা তালিকায় সেরা যারা
+            </h2>
+            <div class="bg-[#1C2541] rounded-xl border border-slate-700/60 overflow-hidden">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-[#0B132B] border-b border-slate-700 font-bold text-slate-300">
+                        <tr><th class="p-3">র‍্যাংক</th><th class="p-3">পরীক্ষার্থী</th><th class="p-3">স্কোর</th></tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="divide-y divide-slate-800 text-slate-300">
+                        <tr><td colspan="3" class="p-3 text-center text-slate-500">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- (৮) সচরাচর প্রশ্ন (FAQ) ভিউ -->
+        <div id="view-faq" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-circle-question"></i> সচরাচর জিজ্ঞাসা (FAQ)
+            </h2>
+            <div class="space-y-3 text-xs">
+                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 space-y-1">
+                    <h4 class="font-bold text-slate-100">প্রশ্ন: পরীক্ষা দিতে কি রেজিস্ট্রেশন করা বাধ্যতামূলক?</h4>
+                    <p class="text-slate-400">উত্তর: মেধা তালিকায় আপনার নাম ও স্কোর জমা রাখার জন্য Google অ্যাকাউন্ট দিয়ে লগইন করে পরীক্ষা দেওয়া ভালো।</p>
+                </div>
+                <div class="bg-[#1C2541] p-4 rounded-xl border border-slate-700 space-y-1">
+                    <h4 class="font-bold text-slate-100">প্রশ্ন: ভুল উত্তরে কি নেগেটিভ মার্কিং আছে?</h4>
+                    <p class="text-slate-400">উত্তর: হ্যাঁ, প্রতিটি ভুল উত্তরের জন্য ০.২৫ নম্বর কাটা যাবে।</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- (৯) যোগাযোগ ভিউ -->
+        <div id="view-contact" class="hidden space-y-4">
+            <h2 class="text-lg font-black text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-headset"></i> যোগাযোগ করুন
+            </h2>
+            <div class="bg-[#1C2541] p-5 rounded-2xl border border-slate-700 space-y-3 text-xs">
+                <p class="text-slate-300">যেকোনো সহায়তার জন্য আমাদের সাথে সরাসরি যোগাযোগ করুন:</p>
+                <div class="space-y-2 text-slate-400">
+                    <p class="flex items-center gap-2"><i class="fa-solid fa-envelope text-emerald-400"></i> support@mullayan.com</p>
+                    <p class="flex items-center gap-2"><i class="fa-solid fa-phone text-emerald-400"></i> +৮৮০ ১৭০০-০০০০০০</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- (১০) পরীক্ষা চলার ভিউ -->
         <div id="view-quiz" class="hidden space-y-4">
             <div class="bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl flex justify-between items-center text-rose-400 font-bold text-sm">
                 <span><i class="fa-regular fa-clock"></i> সময় বাকি:</span>
@@ -127,7 +322,7 @@
 
             <div class="bg-[#1C2541] p-5 rounded-2xl border border-slate-700/60 space-y-4 shadow-xl">
                 <div class="flex justify-between items-center">
-                    <span id="q-counter" class="text-[11px] bg-slate-800 font-bold text-emerald-400 px-3 py-1 rounded-full border border-slate-700">প্রশ্ন ১/৩</span>
+                    <span id="q-counter" class="text-[11px] bg-slate-800 font-bold text-emerald-400 px-3 py-1 rounded-full border border-slate-700">প্রশ্ন ১/১</span>
                     <span class="text-[10px] text-rose-400">ভুল উত্তরে -০.২৫</span>
                 </div>
                 <h3 id="question-text" class="font-bold text-slate-100 text-sm leading-relaxed"></h3>
@@ -137,11 +332,11 @@
             <button onclick="nextQuestion()" class="w-full bg-emerald-500 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg hover:bg-emerald-400 transition">পরবর্তী প্রশ্ন</button>
         </div>
 
-        <!-- ৩. ফলাফল স্ক্রিন -->
+        <!-- (১১) পরীক্ষা শেষ / রেজাল্ট ভিউ -->
         <div id="view-result" class="hidden space-y-4">
             <div class="bg-[#1C2541] p-5 rounded-2xl border border-slate-700/60 text-center space-y-3">
                 <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-emerald-500/40">✓</div>
-                <h2 class="text-lg font-extrabold text-slate-100">পরীক্ষা সম্পন্ন হয়েছে!</h2>
+                <h2 class="text-lg font-extrabold text-slate-100">ফলাফল দেখুন</h2>
                 
                 <div class="grid grid-cols-3 gap-2 py-2">
                     <div class="bg-[#0B132B] p-2.5 rounded-xl border border-slate-700"><span class="block text-[10px] text-slate-400">প্রাপ্ত নম্বর</span><span id="res-score" class="text-base font-black text-emerald-400">0</span></div>
@@ -155,24 +350,9 @@
             <button onclick="showView('home')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded-xl border border-slate-700">হোম পেজে ফিরে যান</button>
         </div>
 
-        <!-- ৪. লাইভ লিডারবোর্ড -->
-        <div id="view-leaderboard" class="hidden space-y-3">
-            <h2 class="font-bold text-base text-slate-100">আজকের মেধা তালিকা (Live)</h2>
-            <div class="bg-[#1C2541] rounded-xl border border-slate-700/60 overflow-hidden">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-[#0B132B] border-b border-slate-700 font-bold text-slate-300">
-                        <tr><th class="p-3">র‍্যাংক</th><th class="p-3">পরীক্ষার্থী</th><th class="p-3">স্কোর</th></tr>
-                    </thead>
-                    <tbody id="leaderboard-body" class="divide-y divide-slate-800 text-slate-300">
-                        <tr><td colspan="3" class="p-3 text-center text-slate-500">লোড হচ্ছে...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <button onclick="showView('home')" class="w-full bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">ফিরে যান</button>
-        </div>
-
     </main>
 
+    <!-- ৪. জাভাস্ক্রিপ্ট কোড (ফায়ারবেস ও মেনু লজিক) -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDY8iAl8PcfnNUxq4PAOGuG9qjrUTksDvQ",
@@ -190,6 +370,32 @@
 
         let currentUser = null;
         let quizData = [];
+        let curIdx = 0, userAnswers = [], timeLeft = 60, timerTimer;
+
+        // মেনু খোলা ও বন্ধ করার ফাংশন
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            if (menu.classList.contains('translate-x-full')) {
+                menu.classList.remove('translate-x-full');
+            } else {
+                menu.classList.add('translate-x-full');
+            }
+        }
+
+        // মেনু আইটেমে চাপ দিয়ে পেজ চেঞ্জ করার ফাংশন
+        function navigateTo(viewName) {
+            toggleMenu(); // মেনু বন্ধ হবে
+            showView(viewName); // নির্দিষ্ট পেজ দেখাবে
+        }
+
+        function showView(viewName) {
+            document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById('view-' + viewName);
+            if(targetView) {
+                targetView.classList.remove('hidden');
+            }
+            if(viewName === 'leaderboard') loadLeaderboard();
+        }
 
         function googleLogin() {
             const provider = new firebase.auth.GoogleAuthProvider();
@@ -198,7 +404,7 @@
                 document.getElementById('login-btn').classList.add('hidden');
                 document.getElementById('user-name').innerText = currentUser.displayName;
                 document.getElementById('user-name').classList.remove('hidden');
-            }).catch(err => alert("লগইন ত্রুটি: " + err.message));
+            }).catch(err => alert("লগইন সমস্যা: " + err.message));
         }
 
         auth.onAuthStateChanged(user => {
@@ -210,19 +416,13 @@
             }
         });
 
-        function showView(viewName) {
-            document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + viewName).classList.remove('hidden');
-            if(viewName === 'leaderboard') loadLeaderboard();
-        }
-
         function startExam() {
             db.collection("questions").get().then(snapshot => {
                 quizData = [];
                 snapshot.forEach(doc => quizData.push(doc.data()));
                 
                 if(quizData.length === 0) {
-                    return alert("ডাটাবেজে কোনো প্রশ্ন পাওয়া যায়নি! এডমিন প্যানেল থেকে প্রশ্ন যোগ করুন।");
+                    return alert("ডাটাবেজে কোনো প্রশ্ন পাওয়া যায়নি! Admin প্যানেল থেকে প্রশ্ন যুক্ত করুন।");
                 }
 
                 curIdx = 0; userAnswers = []; timeLeft = 60;
@@ -232,8 +432,6 @@
                 timerTimer = setInterval(updateTimer, 1000);
             }).catch(err => alert("প্রশ্ন লোড ত্রুটি: " + err.message));
         }
-
-        let curIdx = 0, userAnswers = [], timeLeft = 60, timerTimer;
 
         function loadQuestion() {
             let q = quizData[curIdx];
